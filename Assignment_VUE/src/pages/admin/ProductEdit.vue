@@ -1,49 +1,49 @@
 <template>
-<router-link :to="{ name: 'ProductCreate'}" class="btn">Add Product</router-link>
-<table>
-<thead>
-<tr>
-<th>#id</th>
-<th>Title</th>
-<th>Image</th>
-<th>Actions</th>
-</tr>
-</thead>
-<tbody>
-<tr v-for="product in products" :key="product.id">
-<td>{{product.id}}</td>
-<td>{{product.title}}</td>
-<td><img :src="product.image" :alt="product.title" width="90" /></td>
-<td>
-<router-link :to="{ name: 'ProductEdit', params: { id: product.id }}" class="btn">Edit</router-link>
-<button @click="del(product.id)" class="btn btn-del">Delete</button>
-</td>
-</tr>
-</tbody>
-</table>
+  <form @submit.prevent="submit" >
+    <label>Title 2</label>
+    <input type="text" name="title" v-model="title"                
+    />
+    <label>Image</label>
+    <input type="text" name="image" v-model="image" 
+    />
+    <button>Save</button>
+</form>
 </template>
 
 <script>
-import {onMounted, ref} from 'vue';
+import { onMounted, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
 export default {
-name: 'Products',
-setup() {
-const products = ref([]);
-onMounted( async () => {
-const res = await fetch('http://localhost:8081/products');
-products.value = await res.json();
-})
-const del = async (id) => {
-await fetch(`http://localhost:8081/products/${id}`, {
-method: 'DELETE'
-})
-products.value = products.value.filter(p => p.id !== id);
-}
-return { products, del }
-}
+    name: "ProductEdit",
+    props: ['id'],
+    setup() {
+       const title = ref(''); 
+       const image = ref('');
+       const router = useRouter();
+       const route = useRoute()
+       onMounted(async() => {
+           const res = await fetch(`http://localhost:3000/products/${route.params.id}`);
+           const product = await res.json();
+           title.value = product.title;
+           image.value = product.image;
+       })
+
+       const submit = async () => {
+           await fetch(`http://localhost:3000/products/${route.params.id}`, {
+               method: 'PUT',
+               headers: {"Content-type": "application/json"},
+               body: JSON.stringify({ 
+                   title: title.value,
+                   image: image.value
+                })
+           });
+
+           await router.push('/admin/products');
+       }
+       
+       return {title, image, submit}
+    }
+    
 }
 </script>
-Footer
-© 2022 GitHub, Inc.
-Footer navigation
-Terms

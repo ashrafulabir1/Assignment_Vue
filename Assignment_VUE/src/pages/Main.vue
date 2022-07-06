@@ -1,10 +1,10 @@
 <template>
-<div class="welcome">Welcome to our vue site</div>
+  <div class="welcome">Welcome to Home Page</div>
 </template>
 
 <script>
 export default {
-name: 'Main'
+  name: 'Main'
 }
 </script>
 
